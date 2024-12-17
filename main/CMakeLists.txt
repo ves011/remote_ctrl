@@ -1,5 +1,6 @@
 idf_component_register(SRCS "main.c"
 							"commands.c"
+							"process_message.c"
                         	"../../esp32_common/tcp/ntp_sync.c"
 							"../../esp32_common/utils/utils.c"
 							"../../esp32_common/cmds/cmd_wifi.c"

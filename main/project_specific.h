@@ -27,7 +27,7 @@
 #define MDNSINSTANCENAME	DEV_NAME
 #define TCPCOMMPORT			10001
 
-#define MDNS
+//#define MDNS
 
 #define TCP_CLIENT_SERVER
 
