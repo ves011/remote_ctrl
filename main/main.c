@@ -39,6 +39,8 @@
 #include "tcp_client.h"
 #include "nmea_parser.h"
 #include "commands.h"
+#include "adc_op.h"
+#include "remote_evt.h"
 
 #define PROMPT_STR "TCPREMOTE"
 #define CONFIG_STORE_HISTORY 1
@@ -64,15 +66,18 @@ static void initialize_nvs(void)
 	
 void app_main(void)
 	{
-    	console_state = CONSOLE_OFF;
+	restart_in_progress = 0;
+    console_state = CONSOLE_OFF;
 	setenv("TZ","EET-2EEST,M3.4.0/03,M10.4.0/04",1);
 	spiffs_storage_check();
 	initialize_nvs();
+	controller_op_registered = 0;
 	wifi_join(DEFAULT_SSID, DEFAULT_PASS, JOIN_TIMEOUT_MS);
 	if(rw_console_state(PARAM_READ, &console_state) == ESP_FAIL)
 		console_state = CONSOLE_ON;
 	esp_log_set_vprintf(my_log_vprintf);
 	sync_NTP_time();
+	esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
 	//register_tcp_server();
 	//xTaskCreate(tcp_server, "TCP server", 8192, NULL, 5, NULL);
 	
@@ -100,6 +105,10 @@ void app_main(void)
 	register_tcp_client();
 	register_nmea();
 	register_commands();
+	register_ad();
+	init_remote_event();
+	//sync_NTP_time();
+	controller_op_registered = 1;
 	/*
 	ESP_LOGE(TAG, "Starting tcp client task");
 	if(xTaskCreate(tcp_client_task, "tcp_client task", 8192, NULL, 4, NULL) != pdPASS)
